@@ -14,23 +14,23 @@ _________________________________________________________ PIN OUT
                                          +----------------------------------------+
                                     GND1 | [ ]                                [ ] | GND             
                                     3,3V | [ ]                                [ ] | GPIO23
-                                      EN | [ ]                                [ ] | GPIO22
+                                      EN | [ ]                                [ ] | GPIO22-----------CAN0_INT
                                   GPIO36 | [ ]                                [ ] | GPIO1  /TXD
                                   GPIO39 | [ ]                                [ ] | GPIO3  /RXD
-                                  GPIO34 | [ ]                                [ ] | GPIO21
-                                  GPIO35 | [ ]             ESP32              [ ] | NC
-                                  GPIO32 | [ ]                                [ ] | GPIO19
-                                  GPIO33 | [ ]                                [ ] | GPIO18
-                                  GPIO25 | [ ]                                [ ] | GPIO5
+                    IN_1----------GPIO34 | [ ]                                [ ] | GPIO21-----------CS_1
+                    IN_2----------GPIO35 | [ ]             ESP32              [ ] | NC
+             CONTACTOR_1----------GPIO32 | [0]                                [ ] | GPIO19
+             CONTACTOR_2----------GPIO33 | [0]                                [ ] | GPIO18
+             CONTACTOR_3----------GPIO25 | [0]                                [ ] | GPIO5
                     LED1----------GPIO26 | [ ]                                [ ] | GPIO17-----------LED4
                     LED2----------GPIO27 | [ ]                                [ ] | GPIO16-----------LED3
-                                  GPIO14 | [ ]                                [ ] | GPIO4
+                                  GPIO14 | [ ]                                [ ] | GPIO4------------CAN1_INT
                                   GPIO12 | [ ]                                [ ] | GPIO0
                                          |     [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]     |  
                                          +------+--+--+--+--+--+--+--+--+--+------+
                                      GND________|  |  |  |  |  |  |  |  |  |________GPIO2
-                                  GPIO13___________|  |  |  |  |  |  |  |___________GPIO15
-                                  GPIO9 ______________|  |  |  |  |  |______________GPIO8
+                                  GPIO13___________|  |  |  |  |  |  |  |___________GPIO15-----------CS_2
+                                   GPIO9______________|  |  |  |  |  |______________GPIO8
                                   GPIO10_________________|  |  |  |_________________GPIO7
                                   GPIO11____________________|  |____________________GPIO6
 
@@ -39,25 +39,31 @@ _________________________________________________________ PIN OUT
 
 
 //_______________________________________________________INCLUDES
+#include <Arduino.h>
 #include <mcp_can.h>
 #include <SPI.h>
+
 
 //_______________________________________________________DEFINE´S
 #define LED1 26
 #define LED2 27
 #define LED3 16
 #define LED4 17
+#define CONTACTOR_1 32
+#define CONTACTOR_2 33
+#define CONTACTOR_3 25
 
-MCP_CAN CAN0(14);     // Set CS to pin 10
-#define CAN0_INT 32
+MCP_CAN CAN0(21);     // Set CS to pin 21
+#define CAN0_INT 22
 
+MCP_CAN CAN1(15);     // Set CS to pin 15
+#define CAN1_INT 4
+
+//_______________________________________________________VARIABLES
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
 char msgString[128];
-
-MCP_CAN CAN1(15);     // Set CS to pin 7
-#define CAN1_INT 4
 
 //VARIABLES DE CARGA CORRIENTE Y VOLTAJE POR BITS
 
@@ -116,7 +122,7 @@ byte SN4[8] = {0x0B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00};
 byte MFID[8] = {0x2F, 0x10, 0x20, 0x00, 0x07, 0x00, 0x00, 0x00};
 
 //_____________________________variables de error______________________________________________________________________[ST1]
-int ReleError = 16; //Inicializamos variable del rele externo Tortuga 2
+int ReleError = 18; //Inicializamos variable del rele externo Tortuga 2
 long error_Status = 0; //Variable de los errores del S_BMS
 bool error_Status_flag = 0;
 unsigned long tiempo_error = 0;
@@ -129,9 +135,19 @@ pinMode(LED1,OUTPUT);
 pinMode(LED2,OUTPUT); 
 pinMode(LED3,OUTPUT); 
 pinMode(LED4,OUTPUT); 
+pinMode(CONTACTOR_1,OUTPUT); 
+pinMode(CONTACTOR_2,OUTPUT); 
+pinMode(CONTACTOR_3,OUTPUT); 
+
 
 //_______________________________________________________SALIDAS
 digitalWrite(LED1,HIGH); 
+digitalWrite(LED2,HIGH); 
+digitalWrite(LED3,HIGH); 
+digitalWrite(LED4,HIGH); 
+digitalWrite(CONTACTOR_1,LOW); 
+digitalWrite(CONTACTOR_2,LOW); 
+digitalWrite(CONTACTOR_3,LOW);
 
   Serial.begin(115200);
 
