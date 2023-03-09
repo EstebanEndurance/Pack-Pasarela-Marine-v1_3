@@ -7,13 +7,12 @@
 
 
 /*
-_________________________________________________________ PIN OUT __________________________________________                          
-                                       
+_________________________________________________________ PIN OUT 
                                          +----------------------------------------+
                                          |                                        |
                                          |                                        |
                                          +----------------------------------------+
-                                    GND1 | [ ]                                [ ] | GND
+                                    GND1 | [ ]                                [ ] | GND             
                                     3,3V | [ ]                                [ ] | GPIO23
                                       EN | [ ]                                [ ] | GPIO22
                                   GPIO36 | [ ]                                [ ] | GPIO1  /TXD
@@ -23,8 +22,8 @@ _________________________________________________________ PIN OUT ______________
                                   GPIO32 | [ ]                                [ ] | GPIO19
                                   GPIO33 | [ ]                                [ ] | GPIO18
                                   GPIO25 | [ ]                                [ ] | GPIO5
-                                  GPIO26 | [ ]                                [ ] | GPIO17
-                                  GPIO27 | [ ]                                [ ] | GPIO16
+                    LED1----------GPIO26 | [ ]                                [ ] | GPIO17-----------LED4
+                    LED2----------GPIO27 | [ ]                                [ ] | GPIO16-----------LED3
                                   GPIO14 | [ ]                                [ ] | GPIO4
                                   GPIO12 | [ ]                                [ ] | GPIO0
                                          |     [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]     |  
@@ -39,9 +38,15 @@ _________________________________________________________ PIN OUT ______________
 
 
 
-
+//_______________________________________________________INCLUDES
 #include <mcp_can.h>
 #include <SPI.h>
+
+//_______________________________________________________DEFINE´S
+#define LED1 26
+#define LED2 27
+#define LED3 16
+#define LED4 17
 
 MCP_CAN CAN0(14);     // Set CS to pin 10
 #define CAN0_INT 32
@@ -119,7 +124,15 @@ unsigned long tiempo_error = 0;
 
 void setup()
 {
-  
+//_______________________________________________________PINMODES
+pinMode(LED1,OUTPUT); 
+pinMode(LED2,OUTPUT); 
+pinMode(LED3,OUTPUT); 
+pinMode(LED4,OUTPUT); 
+
+//_______________________________________________________SALIDAS
+digitalWrite(LED1,HIGH); 
+
   Serial.begin(115200);
 
   // Initialize MCP2515 running at 8MHz with a baudrate of 125kb/s and the masks and filters disabled.
