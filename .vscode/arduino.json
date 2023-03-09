@@ -1,0 +1,5 @@
+{
+    "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+    "board": "esp32:esp32:esp32",
+    "sketch": "15191-S2T48A_SOFTWARE__PASARELA_S-BMS_CON_TRANSISTORES_48V_VERS\\15191-S2T48A_SOFTWARE__PASARELA_S-BMS_CON_TRANSISTORES_48V_VERS.ino"
+}
