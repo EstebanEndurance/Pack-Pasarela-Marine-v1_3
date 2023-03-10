@@ -43,7 +43,6 @@ _________________________________________________________ PIN OUT
 #include <mcp_can.h>
 #include <SPI.h>
 
-
 //_______________________________________________________DEFINE´S
 #define LED1 26
 #define LED2 27
@@ -139,12 +138,11 @@ pinMode(CONTACTOR_1,OUTPUT);
 pinMode(CONTACTOR_2,OUTPUT); 
 pinMode(CONTACTOR_3,OUTPUT); 
 
-
 //_______________________________________________________SALIDAS
-digitalWrite(LED1,HIGH); 
-digitalWrite(LED2,HIGH); 
-digitalWrite(LED3,HIGH); 
-digitalWrite(LED4,HIGH); 
+digitalWrite(LED1,HIGH);    // ROJO
+digitalWrite(LED2,LOW);     // VERDE
+digitalWrite(LED3,HIGH);    // ROJO
+digitalWrite(LED4,LOW);     // VERDE
 digitalWrite(CONTACTOR_1,LOW); 
 digitalWrite(CONTACTOR_2,LOW); 
 digitalWrite(CONTACTOR_3,LOW);
