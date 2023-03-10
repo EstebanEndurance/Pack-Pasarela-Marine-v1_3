@@ -1,8 +1,8 @@
 /*********************************************************************************************************
-  ENDURANCE MOTIVE S.L
-  FRONIUS COMUNICATION - PASARELA VERSION PARA ESP32 V0.1 - MODO TORTUGA ERROR LEDS - PASARELA TRNASISTORES
-  DPT DESARROLLO ELECTRÓNICO E I+D
-  16/06/2021
+   *ENDURANCE MOTIVE 
+   *FRONIUS COMUNICATION - PASARELA VERSION PARA ESP32 V0.1 - MODO TORTUGA ERROR LEDS - PASARELA TRNASISTORES
+   *DPT DESARROLLO ELECTRÓNICO E I+D
+   *16/06/2021
 *********************************************************************************************************/
 
 
@@ -51,22 +51,23 @@ _________________________________________________________ PIN OUT
 #define CONTACTOR_1 32
 #define CONTACTOR_2 33
 #define CONTACTOR_3 25
+#define IN1 34
+#define IN2 35
 
-
-
-MCP_CAN CAN0(21);     // Set CS to pin 21
+//_______________________________________________________ASIGNACION DE PINES DEL CAN0
+MCP_CAN CAN0(21);             // Set CS to pin 21
 const int CAN0_INT = 22;
+
+//_______________________________________________________ASIGNACION DE PINES DEL CAN1
+MCP_CAN CAN1(15);             // Set CS to pin 15
+const int CAN1_INT=4;
 
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
 char msgString[128];
 
-MCP_CAN CAN1(15);     // Set CS to pin 7
-const int CAN1_INT=4;
-
-//VARIABLES DE CARGA CORRIENTE Y VOLTAJE POR BITS
-
+//_______________________________________________________VARIABLES DE CARGA CORRIENTE Y VOLTAJE POR BITS
 int primer_envio = 0;
 bool CAN_status = 0;
 byte pinStatus = 0;
@@ -91,8 +92,7 @@ byte Vm2 = 0;
 byte Vm3 = 0;
 byte ta = 0;
 
-// Configuramos el NMT para el paso a estado Operativo
-
+//_______________________________________________________Configuramos el NMT para el paso a estado Operativo
 byte NMT[2] = {0x01, 0x00}; // NMT MODO OPERATIVO
 byte HEART[1] = {0x05}; //HEARTH BEAT DEL BMS MODO ON
 
@@ -125,8 +125,6 @@ byte MFID[8] = {0x2F, 0x10, 0x20, 0x00, 0x07, 0x00, 0x00, 0x00};
 
 void setup()
 {
-
-
 //_______________________________________________________PINMODES
 pinMode(LED1,OUTPUT); 
 pinMode(LED2,OUTPUT); 
@@ -135,6 +133,9 @@ pinMode(LED4,OUTPUT);
 pinMode(CONTACTOR_1,OUTPUT); 
 pinMode(CONTACTOR_2,OUTPUT); 
 pinMode(CONTACTOR_3,OUTPUT); 
+pinMode(IN1,INPUT);
+pinMode(IN2,INPUT); 
+
 
 //_______________________________________________________SALIDAS
 digitalWrite(LED1,LOW);    // ROJO
