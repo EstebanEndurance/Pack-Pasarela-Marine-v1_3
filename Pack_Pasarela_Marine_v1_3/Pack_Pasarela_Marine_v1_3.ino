@@ -54,8 +54,8 @@ _________________________________________________________ PIN OUT
 
 
 
-MCP_CAN CAN0(14);     // Set CS to pin 10
-const int CAN0_INT = 32;
+MCP_CAN CAN0(21);     // Set CS to pin 21
+const int CAN0_INT = 22;
 
 long unsigned int rxId;
 unsigned char len = 0;
@@ -143,7 +143,7 @@ digitalWrite(LED3,LOW);    // ROJO
 digitalWrite(LED4,HIGH);     // VERDE
 digitalWrite(CONTACTOR_1,LOW); 
 digitalWrite(CONTACTOR_2,LOW); 
-digitalWrite(CONTACTOR_3,LOW);
+digitalWrite(CONTACTOR_3,HIGH);
   
   Serial.begin(115200);
 
