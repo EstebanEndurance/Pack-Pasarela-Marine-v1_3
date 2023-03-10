@@ -43,7 +43,7 @@ _________________________________________________________ PIN OUT
 #include <mcp_can.h>
 #include <SPI.h>
 
-//_______________________________________________________DEFINE´S
+//_______________________________________________________DEFINES
 #define LED1 26
 #define LED2 27
 #define LED3 16
@@ -52,17 +52,18 @@ _________________________________________________________ PIN OUT
 #define CONTACTOR_2 33
 #define CONTACTOR_3 25
 
-MCP_CAN CAN0(21);     // Set CS to pin 21
-#define CAN0_INT 22
 
-MCP_CAN CAN1(15);     // Set CS to pin 15
-#define CAN1_INT 4
 
-//_______________________________________________________VARIABLES
+MCP_CAN CAN0(14);     // Set CS to pin 10
+const int CAN0_INT = 32;
+
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
 char msgString[128];
+
+MCP_CAN CAN1(15);     // Set CS to pin 7
+const int CAN1_INT=4;
 
 //VARIABLES DE CARGA CORRIENTE Y VOLTAJE POR BITS
 
@@ -120,15 +121,12 @@ byte SN4[8] = {0x0B, 0x05, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 byte MFID[8] = {0x2F, 0x10, 0x20, 0x00, 0x07, 0x00, 0x00, 0x00};
 
-//_____________________________variables de error______________________________________________________________________[ST1]
-int ReleError = 18; //Inicializamos variable del rele externo Tortuga 2
-long error_Status = 0; //Variable de los errores del S_BMS
-bool error_Status_flag = 0;
-unsigned long tiempo_error = 0;
-
+  
 
 void setup()
 {
+
+
 //_______________________________________________________PINMODES
 pinMode(LED1,OUTPUT); 
 pinMode(LED2,OUTPUT); 
@@ -139,14 +137,14 @@ pinMode(CONTACTOR_2,OUTPUT);
 pinMode(CONTACTOR_3,OUTPUT); 
 
 //_______________________________________________________SALIDAS
-digitalWrite(LED1,HIGH);    // ROJO
-digitalWrite(LED2,LOW);     // VERDE
-digitalWrite(LED3,HIGH);    // ROJO
-digitalWrite(LED4,LOW);     // VERDE
+digitalWrite(LED1,LOW);    // ROJO
+digitalWrite(LED2,HIGH);     // VERDE
+digitalWrite(LED3,LOW);    // ROJO
+digitalWrite(LED4,HIGH);     // VERDE
 digitalWrite(CONTACTOR_1,LOW); 
 digitalWrite(CONTACTOR_2,LOW); 
 digitalWrite(CONTACTOR_3,LOW);
-
+  
   Serial.begin(115200);
 
   // Initialize MCP2515 running at 8MHz with a baudrate of 125kb/s and the masks and filters disabled.
@@ -157,39 +155,33 @@ digitalWrite(CONTACTOR_3,LOW);
     Serial.println("Error Initializing MCP2515...");
   }
   CAN0.setMode(MCP_NORMAL); 
-  pinMode(CAN0_INT, INPUT);
+  pinMode(CAN0_INT, INPUT); 
   
-  CAN0.init_Mask(0,0,0x07FF0000);  
-  CAN0.init_Filt(0,0,0x03500000); 
-  CAN0.init_Filt(1,0,0x03600000); 
+  CAN0.init_Mask(0,0,0x01FF0000);  
+  CAN0.init_Filt(0,0,0x012E0000);
+  CAN0.init_Filt(1,0,0x012C0000); 
+ // CAN0.init_Filt(1,0,0x012E0000); 
   
-  CAN0.init_Mask(1,0,0x07FF0000);
-  CAN0.init_Filt(2,0,0x02030000); 
-  CAN0.init_Filt(3,0,0x03500000); 
-  CAN0.init_Filt(4,0,0x03500000); 
-  CAN0.init_Filt(5,0,0x03500000);
-  
-  
+  CAN0.init_Mask(1,0,0x00FF0000);
+  CAN0.init_Filt(2,0,0x00D20000);
+  CAN0.init_Filt(3,0,0x00C80000);
+  CAN0.init_Filt(4,0,0x00C90000);  
+  CAN0.init_Filt(5,0,0x00C90000); 
+
+
 
   // Initialize MCP2515 (MODULO 2) running at 8MHz with a baudrate of 250kb/s and the masks and filters disabled.
   
   if(CAN1.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK) 
     Serial.println("MCP2515 2 Initialized Successfully!");
   else Serial.println("Error 2 Initializing MCP2515...");
-
   CAN1.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
-
-  
-//_____________________________DECLARAR SALIDA DEL RELE__________________________________________________________________[ST2]
-  pinMode(ReleError,OUTPUT); //Declaramos el Tortuga 2 como salida digital 
   
 }
 
 
 void loop()
 {
-//_____________________________DEFINIR EN SALIDA DE RELEERRO EN 0_________________________________________________________[ERROR]
-  digitalWrite(ReleError,LOW); // Mantenemos en modo normal el Rele Tortuga 2 a LOW 
 
   byte sendNMT = CAN0.sendMsgBuf(0x000, 0, 2, NMT);
 
@@ -201,7 +193,7 @@ void loop()
 
   primer_envio = 0;
 
-  while(pinStatus == B00000010 || pinStatus == B00000100 || pinStatus == B00100000)
+  while(pinStatus == B00000011)
   {
     if(primer_envio == 0){
       Can_Open();
@@ -210,15 +202,13 @@ void loop()
 
     byte sendNMT = CAN0.sendMsgBuf(0x000, 0, 2, NMT);
 
-    byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART); 
+    byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
 
     byte sndStat = CAN0.sendMsgBuf(0x201, 0, 8, RPDO1);
   
     byte sndStat2 = CAN0.sendMsgBuf(0X301, 0, 8, RPDO2);
   
     byte sndStat3 = CAN0.sendMsgBuf(0X401, 0, 8, RPDO3);
-
-    digitalWrite(ReleError,LOW );
 
     delay(50);
 
@@ -228,47 +218,53 @@ void loop()
     
   }
   
-//________________________________ERRORES_____________________________________//
-
-  while(error_Status_flag == 1 &&  (millis()-tiempo_error) >= 5000)   
-  {
-    digitalWrite(ReleError,HIGH);
-    lecturaCan();
-    //imprimir();
-    //Serial.print("ERROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR");
-  }
-  
   delay(100);
-  
 }
 
-//____________________________FUNCION LECTURA CAN S______________________________//
 void lecturaCan() {
 
   if (!digitalRead(CAN0_INT))  {
     CAN_status = 0;
     
     CAN0.readMsgBuf(&rxId, &len, rxBuf);
-    //Serial.println(rxId);
+    Serial.println(rxId,HEX);
     for (byte i = 0; i < len; i++) {
-      if (rxId == 0x350) {
-        pack_current_pos = word(rxBuf[0], rxBuf[1])*100;
-        Vbat = word(rxBuf[2], rxBuf[3])*100;
-        pinStatus = byte(rxBuf[4]);
-        
+
+      if (rxId == 0x12C) { 
+        pinStatus = byte(rxBuf[0]);
+        SOH = word(rxBuf[4],rxBuf[5])/50;
+        //Serial.println("AAAAAAAAAAAAAAAAAAAAA");
+      }
+      if (rxId == 0x0D2) { 
+        pinStatus = byte(rxBuf[2]);
+        SOH = word(rxBuf[3],rxBuf[4])/50;
+        //Serial.println("AAAAAAAAAAAAAAAAAAAAA");
       }
 
-      if (rxId == 0x360) { 
+      if (rxId == 0x0C9) 
+      { 
+        ta = byte(rxBuf[4]);
+        Serial.print("Temperatura ");Serial.println(ta);
+        pinStatus = byte(rxBuf[7]);
+      }
+
+      if (rxId == 0x0C8) { 
+        SOC = word(rxBuf[0],rxBuf[1])/50;
+        Vbat = word(rxBuf[2],rxBuf[3])*100;
+        pack_current_pos= (word(rxBuf[4], rxBuf[5])*65536  + word(rxBuf[6], rxBuf[7])); //32 bits
+        
+         if (pack_current_pos > 2147483647) {
+              pack_current_pos = (4294967295 - pack_current_pos) + 1;
+              } else {
+                      pack_current_pos = pack_current_pos;  
+                     }
+
+         pack_current_pos = pack_current_pos/100;
+      }
+
+      if (rxId == 0x12E) { //848 = 350 en decimal
         Icarga = word(rxBuf[0],rxBuf[1])*100;
         Vcarga = word(rxBuf[2],rxBuf[3])*100;
-        ta = byte(rxBuf[4]);
-        SOC = byte(rxBuf[5]*2);
-        SOH = byte(rxBuf[6]*2);
-      }
-//_____________________________LER ID ERROR__________________________________________________________________[ERROR]
-      if (rxId == 0x203) { 
-        error_Status = (word(rxBuf[0], rxBuf[1]) * 65536  + word(rxBuf[2], rxBuf[3]));
-        funcion_errores();
       }
     }
   }
@@ -323,7 +319,7 @@ void AdaptaValores() {
   RPDO2[4] = Vm2;
   RPDO2[5] = Vm3;
   RPDO2[6] = ta;
-
+  
   RPDO3[0] = Cc1;
   RPDO3[1] = Cc2;
   RPDO3[2] = Cc3;
@@ -335,6 +331,8 @@ void AdaptaValores() {
 
 void Can_Open(){
 
+  delay(200);
+  
   byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
 
   delay(20);
@@ -369,19 +367,7 @@ void Can_Open(){
   
 }
 
-void funcion_errores() {
-  
-    if (error_Status == 0){
-        tiempo_error = millis();
-        error_Status_flag = 0;
-    }
-    else {
-      error_Status_flag = 1;
-    }
-}
-
-void imprimir() 
-{
+void imprimir() {
 
 //Serial.print("ID350"," ",Cm1," ",Cm2," ",Cm3," ",Vm1," ",Vm2," ",Vm3);
 Serial.print("ID350");
@@ -427,7 +413,3 @@ Serial.print(" ");
 Serial.println(pinStatusCharger,HEX);
   
 }
-
-/*********************************************************************************************************
-  END FILE
-*********************************************************************************************************/
