@@ -12,7 +12,7 @@ _________________________________________________________ PIN OUT
                                          |                                        |
                                          |                                        |
                                          +----------------------------------------+
-                                   GND1 | [ ]                                [ ] | GND             
+                                    GND1 | [ ]                                [ ] | GND             
                                     3,3V | [ ]                                [ ] | GPIO23
                                       EN | [ ]                                [ ] | GPIO22-----------CAN0_INT
                                   GPIO36 | [ ]                                [ ] | GPIO1  /TXD
@@ -51,8 +51,8 @@ _________________________________________________________ PIN OUT
 #define CONTACTOR_1 32
 #define CONTACTOR_2 33
 #define CONTACTOR_3 25
-#define IN1 34
-#define IN2 35
+const int IN1 =34;
+const int IN2 =35;
 
 //_______________________________________________________ASIGNACION DE PINES DEL CAN0
 MCP_CAN CAN0(21);             // Set CS to pin 21
@@ -91,6 +91,9 @@ byte Vm1 = 0;
 byte Vm2 = 0;
 byte Vm3 = 0;
 byte ta = 0;
+//_______________________________________________________variable de entrada digital
+int IN1State=0;
+int IN2State=0;
 
 //_______________________________________________________Configuramos el NMT para el paso a estado Operativo
 byte NMT[2] = {0x01, 0x00}; // NMT MODO OPERATIVO
@@ -139,12 +142,12 @@ pinMode(IN2,INPUT);
 
 //_______________________________________________________SALIDAS
 digitalWrite(LED1,LOW);    // ROJO
-digitalWrite(LED2,HIGH);     // VERDE
+digitalWrite(LED2,LOW);     // VERDE
 digitalWrite(LED3,LOW);    // ROJO
-digitalWrite(LED4,HIGH);     // VERDE
+digitalWrite(LED4,LOW);     // VERDE
 digitalWrite(CONTACTOR_1,LOW); 
 digitalWrite(CONTACTOR_2,LOW); 
-digitalWrite(CONTACTOR_3,HIGH);
+digitalWrite(CONTACTOR_3,LOW);
   
   Serial.begin(115200);
 
@@ -185,6 +188,12 @@ digitalWrite(CONTACTOR_3,HIGH);
 
 void loop()
 {
+
+
+
+
+
+
   //_______________________________________________________ACTIVAR CAN_0
   byte sendNMT = CAN0.sendMsgBuf(0x000, 0, 2, NMT);
   byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
@@ -192,7 +201,7 @@ void loop()
   //_______________________________________________________ACTIVAR CAN_1
   //byte sendNMT = CAN1.sendMsgBuf(0x000, 0, 2, NMT);
   //byte sendHEART = CAN1.sendMsgBuf(0x73F, 0, 1, HEART);
-
+  ENTRADAS();
   lecturaCan();
   AdaptaValores();
   imprimir();
@@ -221,9 +230,8 @@ void loop()
     //byte sndStat2 = CAN1.sendMsgBuf(0X301, 0, 8, RPDO2);
     //byte sndStat3 = CAN1.sendMsgBuf(0X401, 0, 8, RPDO3);
 
-
     delay(50);
-
+    ENTRADAS();
     lecturaCan();
     AdaptaValores();
     imprimir();
