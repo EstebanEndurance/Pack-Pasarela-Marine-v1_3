@@ -6,7 +6,6 @@ void lecturaCan() {
 
   if (!digitalRead(CAN0_INT))  {
     CAN_status = 0;
-    
     CAN0.readMsgBuf(&rxId, &len, rxBuf);
     Serial.println(rxId,HEX);
     for (byte i = 0; i < len; i++) {
@@ -214,3 +213,31 @@ Serial.print(" ");
 Serial.println(pinStatusCharger,HEX);
   
 }
+
+/*********************************************************************************************************************************
+ *                                                        FUNCION IMPRIMIR                                                      *
+ *********************************************************************************************************************************/
+void ENTRADAS() {
+  IN1State = digitalRead(IN1);
+  IN2State = digitalRead(IN2);
+
+// check if the pushbutton is pressed. If it is, the buttonState is HIGH:
+  if (IN1State == LOW) {
+    // turn LED on:
+    digitalWrite(LED1, HIGH);
+  } else {
+    // turn LED off:
+    digitalWrite(LED1, LOW);
+  }
+
+  if (IN2State == LOW) {
+    // turn LED on:
+    digitalWrite(LED2, HIGH);
+  } else {
+    // turn LED off:
+    digitalWrite(LED2, LOW);
+  }
+
+
+}
+
