@@ -116,45 +116,54 @@ void AdaptaValores() {
 
 
 /*********************************************************************************************************************************
- *                                                        FUNCION CANOPEN                                                        *
+ *                                                        FUNCION CANOPEN_1                                                      *
  *********************************************************************************************************************************/
-void Can_Open(){
-
+//_______________________________________________________CAN_OPEN CAN_0
+void Can_Open_1(){
   delay(200);
-  
   byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
-
   delay(20);
-
   byte sndStat4 = CAN0.sendMsgBuf(0X601, 0, 8, ProVrs);
-
   delay(20);
-
   byte sndStat5 = CAN0.sendMsgBuf(0X601, 0, 8, NomV);
-
   delay(20);
-      
   byte sndStat6 = CAN0.sendMsgBuf(0X601, 0, 8, SN1);
-
   delay(20);
-   
   byte sndStat7 = CAN0.sendMsgBuf(0X601, 0, 8, SN2);
-
   delay(20);
-   
   byte sndStat8 = CAN0.sendMsgBuf(0X601, 0, 8, SN3);
-
   delay(20);
-   
   byte sndStat9 = CAN0.sendMsgBuf(0X601, 0, 8, SN4);
-
   delay(20);
-  
   byte sndStat10 = CAN0.sendMsgBuf(0X601, 0, 8, MFID);
- 
   delay(50);   // send data per 100ms
-  
 }
+
+
+/*********************************************************************************************************************************
+ *                                                        FUNCION CANOPEN_2                                                      *
+ *********************************************************************************************************************************/
+//_______________________________________________________CAN_OPEN CAN_0
+void Can_Open_2(){
+  delay(200);
+  byte sendHEART = CAN1.sendMsgBuf(0x73F, 0, 1, HEART);
+  delay(20);
+  byte sndStat4 = CAN1.sendMsgBuf(0X601, 0, 8, ProVrs);
+  delay(20);
+  byte sndStat5 = CAN1.sendMsgBuf(0X601, 0, 8, NomV);
+  delay(20);
+  byte sndStat6 = CAN1.sendMsgBuf(0X601, 0, 8, SN1);
+  delay(20);
+  byte sndStat7 = CAN1.sendMsgBuf(0X601, 0, 8, SN2);
+  delay(20);
+  byte sndStat8 = CAN1.sendMsgBuf(0X601, 0, 8, SN3);
+  delay(20);
+  byte sndStat9 = CAN1.sendMsgBuf(0X601, 0, 8, SN4);
+  delay(20);
+  byte sndStat10 = CAN1.sendMsgBuf(0X601, 0, 8, MFID);
+  delay(50);   // send data per 100ms
+}
+
 
 
 /*********************************************************************************************************************************

@@ -12,7 +12,7 @@ _________________________________________________________ PIN OUT
                                          |                                        |
                                          |                                        |
                                          +----------------------------------------+
-                                    GND1 | [ ]                                [ ] | GND             
+                                   GND1 | [ ]                                [ ] | GND             
                                     3,3V | [ ]                                [ ] | GPIO23
                                       EN | [ ]                                [ ] | GPIO22-----------CAN0_INT
                                   GPIO36 | [ ]                                [ ] | GPIO1  /TXD
@@ -172,7 +172,6 @@ digitalWrite(CONTACTOR_3,HIGH);
   CAN0.init_Filt(5,0,0x00C90000); 
 
 
-
   // Initialize MCP2515 (MODULO 2) running at 8MHz with a baudrate of 250kb/s and the masks and filters disabled.
   
   if(CAN1.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK) 
@@ -186,10 +185,13 @@ digitalWrite(CONTACTOR_3,HIGH);
 
 void loop()
 {
-
+  //_______________________________________________________ACTIVAR CAN_0
   byte sendNMT = CAN0.sendMsgBuf(0x000, 0, 2, NMT);
-
   byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
+
+  //_______________________________________________________ACTIVAR CAN_1
+  //byte sendNMT = CAN1.sendMsgBuf(0x000, 0, 2, NMT);
+  //byte sendHEART = CAN1.sendMsgBuf(0x73F, 0, 1, HEART);
 
   lecturaCan();
   AdaptaValores();
@@ -200,19 +202,25 @@ void loop()
   while(pinStatus == B00000011)
   {
     if(primer_envio == 0){
-      Can_Open();
+       Can_Open_1();
       primer_envio = 1;
     }
 
+    //_______________________________________________________ENVIAR CAN_0
     byte sendNMT = CAN0.sendMsgBuf(0x000, 0, 2, NMT);
-
     byte sendHEART = CAN0.sendMsgBuf(0x73F, 0, 1, HEART);
-
     byte sndStat = CAN0.sendMsgBuf(0x201, 0, 8, RPDO1);
-  
     byte sndStat2 = CAN0.sendMsgBuf(0X301, 0, 8, RPDO2);
-  
     byte sndStat3 = CAN0.sendMsgBuf(0X401, 0, 8, RPDO3);
+
+
+    //_______________________________________________________ENVIAR CAN_1
+    //byte sendNMT = CAN1.sendMsgBuf(0x000, 0, 2, NMT);
+    //byte sendHEART = CAN1.sendMsgBuf(0x73F, 0, 1, HEART);
+    //byte sndStat = CAN1.sendMsgBuf(0x201, 0, 8, RPDO1);
+    //byte sndStat2 = CAN1.sendMsgBuf(0X301, 0, 8, RPDO2);
+    //byte sndStat3 = CAN1.sendMsgBuf(0X401, 0, 8, RPDO3);
+
 
     delay(50);
 
